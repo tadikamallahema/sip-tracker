@@ -1,7 +1,7 @@
 
 
 import { signJwt } from "../config/authManager.js";
-import {addInvestorFromDB,getAllInvestorsFromDB,getAInvestorFromDB,investorHoldingsFromDB,totalInvestmentOfUserFromDB, loginUser} from "../models/investorModels.js";
+import {addInvestorFromDB,getAllInvestorsFromDB,getAInvestorFromDB,investorHoldingsFromDB,totalInvestmentOfUserFromDB, loginUser, logoutUser} from "../models/investorModels.js";
 
 export const createInvestor = async(req, res) => {
     try {

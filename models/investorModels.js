@@ -116,3 +116,17 @@ export function loginUser(email,password){
     }
     return users[userIndex];
 }
+
+export const invalidToken=[];
+
+export function logoutUser(email, token){
+    const userIndex = users.findIndex(
+        (u)=> u.email == email && u.loggedIn == true
+    );
+    if (userIndex != -1){
+        users[userIndex] = {...users[userIndex], loggedIn:false};
+        invalidToken.push(token);
+        return true;
+    }
+    return false;
+}
