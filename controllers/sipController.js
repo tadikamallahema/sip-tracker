@@ -8,7 +8,7 @@ export const createSip = async (req, res) => {
 export const oneSipDetails = async (req, res) => {
   const { sid } = req.params;
   const data = await getSipByIdFromDB(sid);
-  return res.json(data);
+  return res.json({data});
 };
 
 export const processSip = async (req, res) => {

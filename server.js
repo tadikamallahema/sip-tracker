@@ -1,3 +1,4 @@
+import Client  from './config/pgManager.js';
 import express from 'express';
 import createTables from './config/schema.js';
 import investorRoute from './routes/investorRoutes.js';
@@ -7,9 +8,9 @@ import sipRoute from './routes/sipInstallmentRoutes.js';
 const app=express();
 app.use(express.json());
 
-await createTables();
+//await createTables();
 
- app.use('/api/investor',investorRoute);
+app.use('/api/investor',investorRoute);
 app.use('/api/mutual',mutualRoute);
 app.use('/api/sip',sipRoute);
 app.listen(5255,()=>{

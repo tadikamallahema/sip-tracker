@@ -1,17 +1,19 @@
-import db from '../config/db.js'
+import  Client  from "../config/pgManager.js";
 export function addFundFromDB(data) {
   return new Promise((resolve, reject) => {
     const { amc_id, fund_name, fund_type, category, latest_nav } = data;
 
-    db.run(
+    Client.query(
       `INSERT INTO mutual_funds (amc_id, fund_name, fund_type, category, latest_nav)
-       VALUES (?, ?, ?, ?, ?)`,
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING *`,
       [amc_id, fund_name, fund_type, category, latest_nav],
-      function (err) {
+      function (err,res) {
         if (err) {
+          console.log(err);
           reject({ error: err.message, message: 'Error adding fund' });
         } else {
-          resolve({ message: 'Fund added successfully', fund_id: this.lastID });
+          resolve({ message: 'Fund added successfully', fund: res.rows });
         }
       }
     );
@@ -20,7 +22,7 @@ export function addFundFromDB(data) {
 
 export function getFundsFromDB() {
   return new Promise((resolve, reject) => {
-    db.all(
+     Client.query(
       `SELECT mf.*, a.amc_name
        FROM mutual_funds mf
        JOIN amcs a ON mf.amc_id = a.amc_id`,
@@ -29,7 +31,7 @@ export function getFundsFromDB() {
         if (err) {
           reject({ error: err.message });
         } else {
-          resolve(rows);
+          resolve(rows.rows);
         }
       }
     );
@@ -37,10 +39,10 @@ export function getFundsFromDB() {
 }
 export function updateFundNAVFromDB(fundId, latest_nav) {
   return new Promise((resolve, reject) => {
-    db.run(
+     Client.query(
       `UPDATE mutual_funds
-       SET latest_nav = ?, updated_at = CURRENT_TIMESTAMP
-       WHERE fund_id = ?`,
+       SET latest_nav = $1, updated_at = CURRENT_TIMESTAMP
+       WHERE fund_id = $2`,
       [latest_nav, fundId],
       function (err) {
         if (err) {

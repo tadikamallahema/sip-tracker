@@ -1,49 +1,57 @@
-import db from "../config/db.js";
+//import db from "../config/db.js";
+import client from "../config/pgManager.js";
 
 export function addInvestorFromDB(data) {
     return new Promise((resolve, reject) => {
         const {first_name,last_name,email,phone,pan_number} = data;
-        db.run(
-            ` INSERT INTO investors(first_name,last_name,email,phone,pan_number)
-            VALUES (?, ?, ?, ?, ?)
+        client.query(
+            `
+            INSERT INTO investors (first_name,last_name,email,phone,pan_number)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING *
             `,
-            [first_name,last_name,email,phone,pan_number],
-            function(err) {
-                if(err) {
-                    reject({error: err.message,message: 'Error adding investor'
-                    });
-                } else {
-                    resolve({message: 'Investor added successfully',investor_id: this.lastID});
-                }
-            }
-        );
+            [first_name, last_name, email, phone, pan_number]
+        )
+        .then((result) => {
+            //console.log(result.rows[0]);
+            //console.log(result.rows);
+            resolve({message: "Investor added successfully",investor: result.rows[0]});})
+        .catch((error) => {
+            reject({error: error.message,message: "Error adding investor"});
+        });
     });
 }
 
 export function getAllInvestorsFromDB() {
     return new Promise((resolve, reject) => {
-        db.all(
+        client.query(
             `SELECT * FROM investors ORDER BY investor_id  `,[],
-            (err, rows) => {
+            /* (err, rows) => {
                 if(err) {
                     reject({error: err.message,message: 'Error fetching investors'});
                 } else {
                     resolve(rows);
                 }
-            }
-        );
+            } */
+        ).then((res)=>{
+            resolve(res.rows);
+        }).catch((err)=>{
+            reject(err)
+        })
     });
 }
 
 export function getAInvestorFromDB(id) {
     return new Promise((resolve, reject) => {
-        db.get(
-            `SELECT * FROM investors WHERE investor_id = ? `,[id],
+        client.query(
+            `SELECT * FROM investors WHERE investor_id = $1 ;`,[id],
             (err, row) => {
                 if(err) {
+                    //console.log(err);
                     reject({error: err.message,message: 'Error fetching investor'});
                 } else {
-                    resolve(row);
+                    //console.log(row)
+                    resolve(row.rows);
                 }
           }
         );
@@ -61,14 +69,14 @@ export function investorHoldingsFromDB(id) {
                     FROM investment_transactions it
             JOIN mutual_funds mf
             ON it.fund_id = mf.fund_id
-            WHERE it.investor_id = ?
+            WHERE it.investor_id = $1
             GROUP BY mf.fund_id, mf.fund_name
         `;
-        db.all(query, [id], (err, rows) => {
+        client.query(query, [id], (err, res) => {
             if (err) {
                 reject({error: err.message,message: "Error fetching holdings"});
             } else {
-               resolve(rows);
+               resolve(res.rows);
             }
         });
     });
@@ -88,14 +96,14 @@ export function totalInvestmentOfUserFromDB(id) {
             ON i.investor_id = it.investor_id
             LEFT JOIN mutual_funds mf
             ON it.fund_id = mf.fund_id
-            WHERE i.investor_id = ?
+            WHERE i.investor_id = $1
             GROUP BY i.investor_id,i.first_name,i.last_name
         `;
-        db.get(query, [id], (err, row) => {
+        client.query(query, [id], (err, res) => {
             if (err) {
                 reject({error: err.message,message: "Error calculating net worth"});
             } else {
-                resolve(row);
+                resolve(res.rows);
             }
         });
     });

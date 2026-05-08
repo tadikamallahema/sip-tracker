@@ -6,7 +6,7 @@ import {addInvestorFromDB,getAllInvestorsFromDB,getAInvestorFromDB,investorHoldi
 export const createInvestor = async(req, res) => {
     try {
         const investor = await addInvestorFromDB(req.body);
-        return res.status(201).json(investor);
+        return res.status(201).json({investor});
     } catch(err) {
         return res.status(500).json(err);
     }
@@ -47,7 +47,7 @@ export const investorHoldings = async(req, res) => {
 export const totalInvestmentOfUser = async(req, res) => {
     try {
         const networth = await totalInvestmentOfUserFromDB(req.params.id);
-        console.log(networth);
+        //console.log(networth);
         return res.status(200).json(networth);
     } catch(err) {
         return res.status(500).json(err);

@@ -3,8 +3,10 @@ import {addFundFromDB,getFundsFromDB,updateFundNAVFromDB} from '../models/fundMo
 export const createFund = async (req, res) => {
     try {
         const fund = await addFundFromDB(req.body);
+        //console.log(fund);
         return res.status(201).json(fund);
     } catch (err) {
+      console.log(err);
         return res.status(500).json(err);
     }
 };

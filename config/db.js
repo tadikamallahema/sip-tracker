@@ -1,4 +1,4 @@
-import sqlite3 from 'sqlite3';
+/* import sqlite3 from 'sqlite3';
 
 const dbpath="C:/Users/Dell/Documents/WebileApps/Traning may4/Database/sip_usage";
 
@@ -8,5 +8,6 @@ const db=new sqlite3.Database(dbpath,(err)=>{
     }else{
         console.log("Database connected successfully to SQLite server");
     }
-})
-export default db;
+})*/
+const db="hello"
+export default db; 
